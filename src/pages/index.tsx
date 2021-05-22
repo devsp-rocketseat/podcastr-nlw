@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next'
 
-interface EpisodeProps {
+type EpisodeProps = {
   id: string
   title: string
   members: string
@@ -14,7 +14,7 @@ interface EpisodeProps {
   }
 }
 
-interface HomeProps {
+type HomeProps = {
   episodes: EpisodeProps[]
 }
 
