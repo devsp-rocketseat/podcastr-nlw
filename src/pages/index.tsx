@@ -1,10 +1,16 @@
 import { GetStaticProps } from 'next'
+import { format, parseISO } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
 
-type EpisodeProps = {
+import { api } from '../services/api'
+import { convertDurationToTimeString } from '../utils/convertDurationToTimeString'
+
+type EpisodeJSONProps = {
   id: string
   title: string
   members: string
-  publishedAt: string
+  // eslint-disable-next-line camelcase
+  published_at: string
   thumbnail: string
   description: string
   file: {
@@ -12,6 +18,18 @@ type EpisodeProps = {
     type: string
     duration: number
   }
+}
+
+type EpisodeProps = {
+  id: string
+  title: string
+  thumbnail: string
+  members: string
+  publishedAt: string
+  duration: number
+  durationAsString: string
+  description: string
+  url: string
 }
 
 type HomeProps = {
@@ -28,12 +46,31 @@ export default function Home({ episodes }: HomeProps) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const response = await fetch('http://localhost:3333/episodes')
-  const data: EpisodeProps = await response.json()
+  const { data } = await api.get<EpisodeJSONProps[]>('episodes', {
+    params: {
+      _limit: 12,
+      _sort: 'publishedAt',
+      _order: 'desc',
+    },
+  })
+
+  const episodes = data.map(episode => {
+    return {
+      id: episode.id,
+      title: episode.title,
+      thumbnail: episode.thumbnail,
+      members: episode.members,
+      publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
+      duration: episode.file.duration,
+      durationAsString: convertDurationToTimeString(episode.file.duration),
+      description: episode.description,
+      url: episode.file.url,
+    }
+  })
 
   return {
     props: {
-      episodes: data,
+      episodes,
     },
     revalidate: 60 * 60 * 8, // 8 hours
   }
