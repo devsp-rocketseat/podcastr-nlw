@@ -22,8 +22,15 @@
   ],
   "rules": {
     "space-before-function-paren": "off",
-    "comma-dangle": [2, "always-multiline"],
+    "comma-dangle": [
+      2,
+      "always-multiline"
+    ],
     "react/prop-types": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "jsx-quotes": [
+      "error",
+      "prefer-double"
+    ]
   }
 }
